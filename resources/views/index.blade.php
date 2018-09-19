@@ -51,32 +51,40 @@
 
 
  $(".btn-submit").click(function(e){
-
+alert('test');
    e.preventDefault();
 
    var name = $("select[name=role_id]").val();
    var priceMin = $("input[name=priceMin]").val();
    var priceMax = $("input[name=priceMax]").val();
    var year = $("input[name=year]").val();
-
+   var Labels = new Array();
   $.ajax({
      type:'get',
      url:'/filter',
      data:{name:name,priceMin:priceMin,priceMax:priceMax,year:year}, 
      }).done(function(response) {
-     
+        response.forEach(function(data){
+                Labels.push(data.stockName);
+            });
       //var jsonData = JSON.parse(response);
      var chart = c3.generate({
                 bindto: '#chart',
                 data: {
+                      labels:Labels,
                       json: response,
                       keys: {
                           x: 'stockYear',
                           value:['stockPrice','id'],
                       },
 
-                      type: 'bar'
-                  }
+                      type: 'bar',
+                      empty: {
+                         label: {
+                                   text: "No Data"
+                                }
+                             }
+                        }
 
                   ,
                 bar: {

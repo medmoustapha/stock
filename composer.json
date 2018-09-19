@@ -8,15 +8,17 @@
         "php": ">=7.0.0",
         "consoletvs/charts": "^6.2",
         "doctrine/dbal": "^2.6",
+        "dompdf/dompdf": "dev-master",
         "fideloper/proxy": "~3.3",
+        "fzaninotto/faker": "dev-master",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
         "laravelcollective/html": "^5.2.0",
-        "dompdf/dompdf"     : "dev-master",
-        "fzaninotto/faker"  : "dev-master",
-        "stripe/stripe-php" : "dev-master"
+        "nesbot/carbon": "^1.32",
+        "stripe/stripe-php": "dev-master"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.1",
         "filp/whoops": "~2.0",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "~1.0",

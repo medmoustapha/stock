@@ -17,7 +17,23 @@
        <input type="text" class ="input-lg" name="search" id="search" placeholder="Filter" ng-modul=""/>
        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
        <span id="pagination" style:align="right"></span>
+      
        <span id="total_row" style="text-align:right";></span>
+       <span  style:align="right"class ="nav navbar-nav navbar-right">
+             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+                                    {{ Auth::user()->name }} <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                  <li>
+                     <a href="{{ route('logout') }}" onclick="event.preventDefault();
+                               document.getElementById('logout-form').submit();">
+                                Logout
+                      </a>
+                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                            {{ csrf_field() }}
+                                        </form> </li>
+                                </ul>
+        </span>
     <!--  </form> -->
     <br>
 <table class="table table-bordered table-hover" ng-controller="controller">

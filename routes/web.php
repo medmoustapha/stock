@@ -31,6 +31,8 @@ Route::get('stock/search','StockController@search');
 Route::post('stock/searchButton','StockController@searchButton');
 
 Route::get('stock/indexAg','StockController@indexAg');
+Route::get('logout','StockController@logout');
+
 
 
 //Route::resource('source','StockController');
@@ -44,3 +46,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
   return ResourcesStock::collection(Stock::all());
 }); */
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

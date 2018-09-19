@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use DB;
 use App\Http\Resources\ResourcesStock;
+use Illuminate\Support\Facades\Redirect;
 use App\Stock;
+use App\User;
 use Illuminate\Http\Responce;
 
 class StockController extends Controller
@@ -15,10 +17,13 @@ class StockController extends Controller
      * @return \Illuminate\Http\Response
      */
 public function index()
-    {
+    { if(Auth::check()){
       $result = Stock::all();
       return view('index',compact('result'));
     }
+    else {  return Redirect::to('login'); }
+
+  }
     /**
      * Display a listing of the resource filter.
      *
@@ -40,8 +45,8 @@ public function search(Request $request){
               $stocks = Stock::all()->toArray();
               //return redirect('stock');
              }
-        $total_data = '<b>RESULT: '.$stocks->count().'<b>';
-        $total_row = $stocks->count();
+        $total_data = '<b>RESULT: '.count($stocks).'<b>';
+        $total_row = count($stocks);
         
         if($total_row > 0){
           
@@ -53,10 +58,11 @@ public function search(Request $request){
                     <td>'.$stock->stockPrice.'</td><td>'.$stock->stockYear.'</td>
                     <td><a href= "" class="btn btn-warning">edit</a></td>
                     <td>
-                      <form action="{{action(StockController@destroy,'. $stock->id.')}}" method=post onsubmit="return confirm("vos étes sur de supprimer ce produit?");">
+                    <a href= "" class="btn btn-danger">Delete</a>
+                   <!--  <form action="" method="post" onsubmit="return confirm("vos étes sur de supprimer ce produit?");">
                         <input name="_method" type="hidden" value="DELETE">
                         <button class="btn btn-danger" type="submit" )>Delete</button>
-                      </form>
+                      </form>-->
                      </td>
                   </tr>'; }
            } 
@@ -90,6 +96,7 @@ public function searchButton($request){
     * Create a new controller instance.
     */
 public function filter(Request $request){ 
+  
   if($request->priceMin!=null and $request->priceMax!=null and $request->year!=null){
     $produit=Stock::where('stockName',$request->name)
                   ->whereBetween('stockPrice', array($request->priceMin, $request->priceMax))
@@ -102,12 +109,26 @@ public function filter(Request $request){
                   ->select('stockName','stockYear','stockPrice','id')
                   ->get();
            }
-   elseif($request->priceMin==null and $request->priceMax==null and $request->year!=null){
+  elseif ($request->priceMin!=null){
+    $produit=Stock::where('stockName',$request->name)
+    ->where('stockPrice','>=',$request->priceMin)
+    ->select('stockName','stockYear','stockPrice','id')
+    ->get();
+   }
+  elseif ($request->priceMax!=null){
+    $produit=Stock::where('stockName',$request->name)
+    ->where('stockPrice','<=',$request->priceMax)
+    ->select('stockName','stockYear','stockPrice','id')
+    ->get();
+   }
+   
+  elseif($request->priceMin==null and $request->priceMax==null and $request->year!=null){
       $produit=Stock::where('stockName',$request->name)
                     ->where('stockYear',$request->year)
                     ->select('stockName','stockYear','stockPrice','id')
                     ->get();
                    }
+                   
   else{
     $produit=Stock::where('stockName',$request->name)
                   ->select('stockName','stockYear','stockPrice','id')
@@ -120,22 +141,29 @@ public function filterSelect(){
   ->select('stockName','stockYear','stockPrice','id')
   ->get();
   return response()->json($produit);
-}
+ }
 public function index2()
-    {
-      return view('index2');
+    { if(Auth::check()){
+      return view('index2');}
+      else {
+        return redirect::to('login');
+      }
     
     }
-    public function index3()
-    {
+public function index3()
+    { if(Auth::check()){
+      $id = Auth::id();
+      $user=User::where('id',$id)->select('name','email')->get();
       $stocks = Stock::all()->toArray();
       /* $stocks = \DB::table('stocks')
                     ->orderBy('id', 'DESC')
                     ->get(); */
       $stocks = Stock::paginate(7);
-      return view('index1',compact('stocks'));
+      return view('index1',compact('stocks','user'));
     }
-    function indexAg(){
+    else return redirect::to('login');
+    }
+function indexAg(){
       $stocks = Stock::all()->toArray();
       $stocks = Stock::paginate(5);
       return json_encode($stocks);
@@ -145,10 +173,11 @@ public function index2()
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+public function create()
+    {  if(Auth::check()){
          $stock=new Stock();
-         return view('Stock',compact('stock'));
+         return view('Stock',compact('stock'));}
+         else return redirect::to('login');
     }
   //afficher liste de nom produits
 
@@ -190,10 +219,11 @@ public function show($id)
      * @return \Illuminate\Http\Response
      */
 public function edit($id)
-    {
+    { if(Auth::check()){
        $stock = \App\Stock::find($id);
 
-        return view('edit',compact('stock','id'));
+        return view('edit',compact('stock','id'));}
+      else return redirect::to('login');
       }
 
     /**
@@ -222,10 +252,11 @@ public function update(Request $request, $id)
      * @return \Illuminate\Http\Response
      */
 public function destroy($id)
-    {
+    { if(Auth::check()){
       $stock = \App\Stock::find($id);
       $stock->delete();
-      return redirect('stock');
+      return redirect('stock');}
+      else redirect::to('login');
     }
 public function chart()
       {
@@ -237,4 +268,9 @@ public function chart()
         /* return response()->json(['prix'=>'45', 'stock'=>'10','annee'=>'2018']); */
         //return new StockResource($result);
       }
+public function logout(){
+  Auth::logout(); // logging out user
+  return Redirect::to('login');
+      }
  }
+
